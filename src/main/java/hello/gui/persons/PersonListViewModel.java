@@ -24,19 +24,36 @@ import org.springframework.stereotype.Component;
 public class PersonListViewModel implements ViewModel {
 
     private final PersonRepository personRepository;
-    private RandomNameGenerator randomNameGenerator;
+    private final RandomNameGenerator randomNameGenerator;
+    private final WindowManager windowManager;
 
     private ObservableList<Person> persons = FXCollections.observableArrayList();
-    private WindowManager windowManager;
 
     @InjectScope
     private PersonDetailScope scope;
+    private DelegateCommand gotoDelegateCommand;
+    private DelegateCommand gotoDetailDelegateCommand;
 
     @Autowired
     public PersonListViewModel(PersonRepository personRepository, WindowManager windowManager, RandomNameGenerator randomNameGenerator) {
         this.windowManager = windowManager;
         this.personRepository = personRepository;
         this.randomNameGenerator = randomNameGenerator;
+
+        gotoDelegateCommand = new DelegateCommand(() -> new Action() {
+            @Override
+            protected void action() throws Exception {
+                random();
+            }
+        }, false);
+
+        gotoDetailDelegateCommand = new DelegateCommand(() -> new Action() {
+            @Override
+            protected void action() throws Exception {
+                gotoDetail();
+            }
+        }, scope.selectedPersonProperty().isNotNull(), false);
+
         initData();
     }
 
@@ -54,21 +71,11 @@ public class PersonListViewModel implements ViewModel {
     }
 
     public DelegateCommand getGotoDetailCommand() {
-        return new DelegateCommand(() -> new Action() {
-            @Override
-            protected void action() throws Exception {
-                gotoDetail();
-            }
-        }, scope.selectedPersonProperty().isNotNull(), false);
+        return gotoDetailDelegateCommand;
     }
 
     public DelegateCommand getRandomCommand() {
-        return new DelegateCommand(() -> new Action() {
-            @Override
-            protected void action() throws Exception {
-                random();
-            }
-        }, false);
+        return gotoDelegateCommand;
     }
 
     private void random() {
