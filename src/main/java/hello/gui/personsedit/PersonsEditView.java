@@ -1,4 +1,4 @@
-package hello.gui;
+package hello.gui.personsedit;
 
 /**
  * Created by No3x on 08.08.2017.
@@ -15,7 +15,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 @Component
-public class HelloWorldView implements FxmlView<HelloWorldViewModel>, Initializable {
+public class PersonsEditView implements FxmlView<PersonsEditViewModel>, Initializable {
 
     @FXML
     private Label helloLabel;
@@ -24,7 +24,7 @@ public class HelloWorldView implements FxmlView<HelloWorldViewModel>, Initializa
     private Label personSelectedName;
 
     @InjectViewModel
-    private HelloWorldViewModel viewModel;
+    private PersonsEditViewModel viewModel;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

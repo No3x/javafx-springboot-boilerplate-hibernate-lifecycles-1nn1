@@ -1,15 +1,18 @@
 package hello.gui.persons;
 
 import de.saxsys.mvvmfx.*;
+import de.saxsys.mvvmfx.utils.commands.Action;
+import de.saxsys.mvvmfx.utils.commands.DelegateCommand;
 import hello.data.model.Person;
 import hello.data.repository.PersonRepository;
-import hello.gui.HelloWorldView;
-import hello.gui.HelloWorldViewModel;
 import hello.gui.WindowManager;
+import hello.gui.personsedit.PersonsEditView;
+import hello.gui.personsedit.PersonsEditViewModel;
 import hello.gui.scopes.PersonDetailScope;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.kohsuke.randname.RandomNameGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Component;
 public class PersonListViewModel implements ViewModel {
 
     private final PersonRepository personRepository;
+    private RandomNameGenerator randomNameGenerator;
 
     private ObservableList<Person> persons = FXCollections.observableArrayList();
     private WindowManager windowManager;
@@ -29,15 +33,16 @@ public class PersonListViewModel implements ViewModel {
     private PersonDetailScope scope;
 
     @Autowired
-    public PersonListViewModel(PersonRepository personRepository, WindowManager windowManager) {
+    public PersonListViewModel(PersonRepository personRepository, WindowManager windowManager, RandomNameGenerator randomNameGenerator) {
         this.windowManager = windowManager;
         this.personRepository = personRepository;
-        personRepository.findAll().forEach(persons::add);
+        this.randomNameGenerator = randomNameGenerator;
+        initData();
     }
 
-    public void addRandom() {
-        final ViewTuple<HelloWorldView, HelloWorldViewModel> viewTuple = FluentViewLoader.fxmlView(HelloWorldView.class).load();
-        windowManager.createWindow(viewTuple.getView()).show();
+    private void initData() {
+        persons.clear();
+        personRepository.findAll().forEach(persons::add);
     }
 
     public ObjectProperty<Person> selectedPersonProperty() {
@@ -46,5 +51,34 @@ public class PersonListViewModel implements ViewModel {
 
     public ObservableList<Person> personsProperty() {
         return persons;
+    }
+
+    public DelegateCommand getGotoDetailCommand() {
+        return new DelegateCommand(() -> new Action() {
+            @Override
+            protected void action() throws Exception {
+                gotoDetail();
+            }
+        }, scope.selectedPersonProperty().isNotNull(), false);
+    }
+
+    public DelegateCommand getRandomCommand() {
+        return new DelegateCommand(() -> new Action() {
+            @Override
+            protected void action() throws Exception {
+                random();
+            }
+        }, false);
+    }
+
+    private void random() {
+        final Person person = new Person(randomNameGenerator.next());
+        personRepository.save(person);
+        initData();
+    }
+
+    private void gotoDetail() {
+        final ViewTuple<PersonsEditView, PersonsEditViewModel> viewTuple = FluentViewLoader.fxmlView(PersonsEditView.class).load();
+        windowManager.createWindow(viewTuple.getView()).show();
     }
 }

@@ -29,4 +29,5 @@ dependencies {
 	compile group: 'com.google.guava', name: 'guava', version: '23.0'
     compile 'de.saxsys:mvvmfx:1.6.0'
     compile 'de.saxsys:mvvmfx-validation:1.6.0'
+    compile 'org.kohsuke:wordnet-random-name:1.3'
 }

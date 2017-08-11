@@ -1,4 +1,4 @@
-package hello.gui;
+package hello.gui.personsedit;
 
 /**
  * Created by No3x on 08.08.2017.
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ScopeProvider(scopes = {PersonDetailScope.class})
-public class HelloWorldViewModel implements ViewModel {
+public class PersonsEditViewModel implements ViewModel {
 
     private final StringProperty helloMessage = new SimpleStringProperty("Hello World");
 
@@ -28,7 +28,7 @@ public class HelloWorldViewModel implements ViewModel {
     @Autowired
     private CustomerRepository customerRepository;
 
-    public HelloWorldViewModel() {
+    public PersonsEditViewModel() {
     }
 
     public StringProperty helloMessageProperty() {
@@ -49,7 +49,8 @@ public class HelloWorldViewModel implements ViewModel {
 
     public ObjectProperty<Person> selectedPersonProperty() {
         if( null == scope.selectedPersonProperty().get() )
-            throw new IllegalStateException("The is no person selected! This is crucial for the process.");
+            throw new IllegalStateException("There is no person selected! This is crucial for the process.");
+
         return scope.selectedPersonProperty();
     }
 

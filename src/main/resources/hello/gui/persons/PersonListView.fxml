@@ -12,7 +12,7 @@
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="hello.gui.persons.PersonListView">
 <children>
     <ListView fx:id="personsListView" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" />
-    <Button accessibleHelp="R" accessibleRoleDescription="B" accessibleText="T" mnemonicParsing="false" onAction="#addRandomAction" text="Create Random" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <Button accessibleHelp="R" accessibleRoleDescription="B" accessibleText="T" mnemonicParsing="false" onAction="#randomAction" text="Create Random" GridPane.columnIndex="1" GridPane.rowIndex="1" />
     <Label text="Persons" />
     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Click the Button create a new Person and a new Team. The person is added to this team by default. Doubleclick a user to edit the name and the teams." wrappingWidth="236.43359375" GridPane.columnIndex="1" GridPane.rowIndex="2" />
     <ListView fx:id="teamsOfSelected" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" />

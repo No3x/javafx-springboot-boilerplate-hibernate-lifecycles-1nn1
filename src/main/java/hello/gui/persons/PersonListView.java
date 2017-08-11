@@ -4,6 +4,7 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import hello.data.model.Person;
 import hello.data.model.Team;
+import hello.utils.JavaFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -18,6 +19,7 @@ import java.util.ResourceBundle;
  */
 @Component
 public class PersonListView implements FxmlView<PersonListViewModel>, Initializable {
+
     @FXML
     private ListView<Person> personsListView;
 
@@ -30,11 +32,22 @@ public class PersonListView implements FxmlView<PersonListViewModel>, Initializa
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         personsListView.setItems((personListViewModel.personsProperty()));
+
         personListViewModel.selectedPersonProperty().bind(personsListView.getSelectionModel().selectedItemProperty());
+
+        personsListView.setOnMouseClicked(event -> {
+            if (JavaFXUtils.isDoubleClick(event)) {
+                gotoDetailAction();
+            }
+        });
     }
 
-    public void addRandomAction(ActionEvent actionEvent) {
-        personListViewModel.addRandom();
+    public void gotoDetailAction() {
+        personListViewModel.getGotoDetailCommand().execute();
+    }
+
+    public void randomAction(ActionEvent actionEvent) {
+        personListViewModel.getRandomCommand().execute();
     }
 
 }
