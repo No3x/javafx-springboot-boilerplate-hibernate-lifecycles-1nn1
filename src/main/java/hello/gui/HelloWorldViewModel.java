@@ -1,10 +1,11 @@
-package hello;
+package hello.gui;
 
 /**
  * Created by No3x on 08.08.2017.
  */
 
 import de.saxsys.mvvmfx.ViewModel;
+import hello.data.repository.CustomerRepository;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,5 @@ public class HelloWorldViewModel implements ViewModel {
     public void onAction() {
         helloMessage.set("Clicked");
     }
-
 
 }

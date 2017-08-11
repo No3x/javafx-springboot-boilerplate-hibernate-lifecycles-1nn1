@@ -1,7 +1,9 @@
 package hello.bootstrap;
 
-import hello.Customer;
-import hello.CustomerRepository;
+import hello.data.model.Customer;
+import hello.data.model.Person;
+import hello.data.repository.CustomerRepository;
+import hello.data.repository.PersonRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,9 +20,14 @@ public class DatabaseBootstrap implements InitializingBean {
     @Autowired
     private CustomerRepository repository;
 
+    @Autowired
+    private PersonRepository personRepository;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         log.info("Adding database fixtures");
+
+        personRepository.save( new Person("Horst") );
 
         // save a couple of customers
         repository.save(new Customer("Jack", "Bauer"));

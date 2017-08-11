@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Text?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="hello.gui.persons.PersonListView">
+<children>
+    <ListView fx:id="personsListView" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" />
+    <Button accessibleHelp="R" accessibleRoleDescription="B" accessibleText="T" mnemonicParsing="false" onAction="#addRandomAction" text="Create Random" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <Label text="Persons" />
+    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Click the Button create a new Person and a new Team. The person is added to this team by default. Doubleclick a user to edit the name and the teams." wrappingWidth="236.43359375" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <ListView fx:id="teamsOfSelected" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" />
+    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Teams of selected Person" GridPane.columnIndex="2" />
+</children>
+<columnConstraints>
+    <ColumnConstraints />
+    <ColumnConstraints />
+    <ColumnConstraints />
+    <ColumnConstraints />
+</columnConstraints>
+<rowConstraints>
+    <RowConstraints />
+    <RowConstraints />
+    <RowConstraints />
+</rowConstraints>
+<padding>
+    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+</padding>
+</GridPane>

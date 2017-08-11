@@ -3,7 +3,9 @@ package hello;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewTuple;
-import hello.view.MainLayout;
+import hello.gui.WindowManager;
+import hello.gui.persons.PersonListView;
+import hello.gui.persons.PersonListViewModel;
 import javafx.application.Preloader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -27,20 +29,21 @@ public class Application extends AbstractJavaFxApplicationSupport {
     /**
      * Note that this is configured in application.properties
      */
-    @Value("${app.ui.title:Example App}")
+    @Value("${app.gui.title:Example App}")
     private String windowTitle;
 
     @Autowired
-    private MainLayout mainController;
+    WindowManager windowManager;
 
     @Override
     public void start(Stage stage) throws Exception {
 
         MvvmFX.setCustomDependencyInjector(this::resolve);
-
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
 
-        final ViewTuple<HelloWorldView, HelloWorldViewModel> viewTuple = FluentViewLoader.fxmlView(HelloWorldView.class).load();
+        windowManager.setMainWindow(stage);
+
+        final ViewTuple<PersonListView, PersonListViewModel> viewTuple = FluentViewLoader.fxmlView(PersonListView.class).load();
 
         final Parent root = viewTuple.getView();
         stage.setScene(new Scene(root));

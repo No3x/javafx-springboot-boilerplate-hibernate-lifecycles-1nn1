@@ -1,4 +1,4 @@
-package hello;
+package hello.gui;
 
 /**
  * Created by No3x on 08.08.2017.
@@ -6,8 +6,6 @@ package hello;
 
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
-import de.saxsys.mvvmfx.utils.validation.visualization.ControlsFxVisualizer;
-import de.saxsys.mvvmfx.utils.validation.visualization.ValidationVisualizer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -24,8 +22,6 @@ public class HelloWorldView implements FxmlView<HelloWorldViewModel>, Initializa
 
     @InjectViewModel
     private HelloWorldViewModel viewModel;
-
-    private ValidationVisualizer validationVisualizer = new ControlsFxVisualizer();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

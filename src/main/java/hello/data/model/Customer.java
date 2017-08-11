@@ -1,7 +1,7 @@
 /**
  * Created by No3x on 08.08.2017.
  */
-package hello;
+package hello.data.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
