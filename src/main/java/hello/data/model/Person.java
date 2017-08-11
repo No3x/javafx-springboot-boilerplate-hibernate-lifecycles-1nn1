@@ -16,6 +16,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
+// http://www.codejava.net/frameworks/hibernate/hibernate-many-to-many-association-with-extra-columns-in-join-table-example
 @Entity
 public class Person {
     private static final Logger LOG = LoggerFactory.getLogger(Person.class);

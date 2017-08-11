@@ -52,7 +52,7 @@ public class Team implements Serializable, Comparable<Team>  {
         return name;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.team", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.team", orphanRemoval = true, cascade = CascadeType.ALL)
     public Set<PersonTeam> getPersonTeams() {
         return personTeams;
     }
