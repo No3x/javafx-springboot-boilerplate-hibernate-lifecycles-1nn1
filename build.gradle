@@ -27,5 +27,6 @@ dependencies {
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	compile("com.h2database:h2")
 	compile group: 'com.google.guava', name: 'guava', version: '23.0'
-
+    compile 'de.saxsys:mvvmfx:1.6.0'
+    compile 'de.saxsys:mvvmfx-validation:1.6.0'
 }

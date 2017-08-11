@@ -1,7 +1,11 @@
 package hello;
 
+import de.saxsys.mvvmfx.FluentViewLoader;
+import de.saxsys.mvvmfx.MvvmFX;
+import de.saxsys.mvvmfx.ViewTuple;
 import hello.view.MainLayout;
 import javafx.application.Preloader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -32,10 +36,14 @@ public class Application extends AbstractJavaFxApplicationSupport {
     @Override
     public void start(Stage stage) throws Exception {
 
+        MvvmFX.setCustomDependencyInjector(this::resolve);
+
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
 
-        stage.setTitle(windowTitle);
-        stage.setScene(new Scene(mainController));
+        final ViewTuple<HelloWorldView, HelloWorldViewModel> viewTuple = FluentViewLoader.fxmlView(HelloWorldView.class).load();
+
+        final Parent root = viewTuple.getView();
+        stage.setScene(new Scene(root));
         stage.setResizable(true);
         stage.centerOnScreen();
         stage.show();
