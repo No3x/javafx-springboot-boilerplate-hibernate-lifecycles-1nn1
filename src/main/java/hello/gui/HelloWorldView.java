@@ -20,13 +20,17 @@ public class HelloWorldView implements FxmlView<HelloWorldViewModel>, Initializa
     @FXML
     private Label helloLabel;
 
+    @FXML
+    private Label personSelectedName;
+
     @InjectViewModel
     private HelloWorldViewModel viewModel;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        helloLabel.textProperty().bind(viewModel.helloMessage());
+        helloLabel.textProperty().bind(viewModel.helloMessageProperty());
         helloLabel.setOnMouseClicked(event -> viewModel.onAction());
+        personSelectedName.textProperty().bind(viewModel.selectedPersonProperty().get().nameProperty());
     }
 
 }
