@@ -6,20 +6,26 @@ package hello.data.model;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by No3x on 05.02.2017.
+ * https://vladmihalcea.com/2017/07/26/the-best-way-to-map-a-many-to-many-association-with-extra-columns-when-using-jpa-and-hibernate/
  */
 @Entity
 @Table(name = "person_team")
-@AssociationOverrides({
-    @AssociationOverride(name = "pk.person",
-        joinColumns = @JoinColumn(name = "PERSON_ID")),
-    @AssociationOverride(name = "pk.team",
-        joinColumns = @JoinColumn(name = "TEAM_ID")) })
 public class PersonTeam implements java.io.Serializable {
+    @EmbeddedId
+    private PersonTeamPk pk;
 
-    private PersonTeamPk pk = new PersonTeamPk();
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @MapsId("personId")
+    private Person person;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @MapsId("teamId")
+    private Team team;
+
     private Date createdDate;
     private String createdBy;
 
@@ -27,11 +33,11 @@ public class PersonTeam implements java.io.Serializable {
     }
 
     public PersonTeam(Person person, Team team) {
-        this.pk.setPerson(person);
-        this.pk.setTeam(team);
+        this.person = person;
+        this.team = team;
+        this.pk = new PersonTeamPk(person.getId(), team.getId());
     }
 
-    @EmbeddedId
     public PersonTeamPk getPk() {
         return pk;
     }
@@ -42,20 +48,20 @@ public class PersonTeam implements java.io.Serializable {
 
     @Transient
     public Person getPerson() {
-        return getPk().getPerson();
+        return person;
     }
 
     public void setPerson(Person person) {
-        getPk().setPerson(person);
+        this.person = person;
     }
 
     @Transient
     public Team getTeam() {
-        return getPk().getTeam();
+        return team;
     }
 
     public void setTeam(Team team) {
-        getPk().setTeam(team);
+        this.team = team;
     }
 
     @Temporal(TemporalType.DATE)
@@ -85,15 +91,12 @@ public class PersonTeam implements java.io.Serializable {
 
         PersonTeam that = (PersonTeam) o;
 
-        if (getPk() != null ? !getPk().equals(that.getPk())
-            : that.getPk() != null)
-            return false;
-
-        return true;
+        return Objects.equals(person, that.person) &&
+            Objects.equals(team, that.team);
     }
 
     public int hashCode() {
-        return (getPk() != null ? getPk().hashCode() : 0);
+        return Objects.hash(person, team);
     }
 
 }

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,7 +59,7 @@ public class Person {
         return name;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.person", cascade=CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade={CascadeType.PERSIST, CascadeType.MERGE})
     public Set<PersonTeam> getPersonTeams() {
         return personTeams;
     }
@@ -102,7 +103,7 @@ public class Person {
         return teams;
     }
 
-    public void addTeam(Team team, String createdBy, Date createdDate) {
+    public PersonTeam addTeam(Team team, String createdBy, Date createdDate) {
         final PersonTeam personTeam = new PersonTeam(this, team);
         personTeam.setCreatedBy(createdBy);
         personTeam.setCreatedDate(createdDate);
@@ -113,14 +114,24 @@ public class Person {
             LOG.error("Failed to add personTeam " + personTeam + " to collection team.getPersonTeams " + team.getPersonTeams());
         }
         teams.setAll(personTeams.stream().map(PersonTeam::getTeam).collect(Collectors.toList()));
+        return personTeam;
     }
 
     public void removeTeam(Team team) {
-        PersonTeam personTeam = new PersonTeam( this, team );
-        team.getPersonTeams().remove( personTeam );
-        personTeams.removeIf( pt -> pt.getTeam() == team );
-        personTeam.setPerson( null );
-        personTeam.setTeam( null );
+
+        for (Iterator<PersonTeam> iterator = personTeams.iterator();
+             iterator.hasNext(); ) {
+            PersonTeam personTeam = iterator.next();
+
+            if (personTeam.getPerson().equals(this) &&
+                personTeam.getTeam().equals(team)) {
+                iterator.remove();
+                team.getPersonTeams().remove(personTeam);
+                personTeam.setPerson(null);
+                personTeam.setTeam(null);
+            }
+        }
+
         teams.setAll(personTeams.stream().map(PersonTeam::getTeam).collect(Collectors.toList()));
     }
 

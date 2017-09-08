@@ -1,7 +1,8 @@
 package hello.data.model;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.ManyToOne;
+import java.util.Objects;
 
 /**
  * Created by No3x on 05.02.2017.
@@ -9,25 +10,33 @@ import javax.persistence.ManyToOne;
 @Embeddable
 public class PersonTeamPk implements java.io.Serializable {
 
-    private Person person;
-    private Team team;
+    @Column(name = "person_id")
+    private Long personId;
 
-    @ManyToOne
-    public Person getPerson() {
-        return person;
+    @Column(name = "team_id")
+    private Long teamId;
+
+    public PersonTeamPk() {}
+
+    public PersonTeamPk(Long personId, Long teamId) {
+        this.personId = personId;
+        this.teamId = teamId;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public Long getPersonId() {
+        return personId;
     }
 
-    @ManyToOne
-    public Team getTeam() {
-        return team;
+    public void setPersonId(Long personId) {
+        this.personId = personId;
     }
 
-    public void setTeam(Team team) {
-        this.team = team;
+    public Long getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
     }
 
     public boolean equals(Object o) {
@@ -36,18 +45,12 @@ public class PersonTeamPk implements java.io.Serializable {
 
         PersonTeamPk that = (PersonTeamPk) o;
 
-        if (person != null ? !person.equals(that.person) : that.person != null) return false;
-        if (team != null ? !team.equals(that.team) : that.team != null)
-            return false;
-
-        return true;
+        return Objects.equals(personId, that.personId) &&
+            Objects.equals(teamId, that.teamId);
     }
 
     public int hashCode() {
-        int result;
-        result = (person != null ? person.hashCode() : 0);
-        result = 31 * result + (team != null ? team.hashCode() : 0);
-        return result;
+        return Objects.hash(personId, teamId);
     }
 
 }

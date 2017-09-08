@@ -1,10 +1,7 @@
 package hello.data.model;
 
 import javafx.beans.Observable;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.util.Callback;
 
 import javax.persistence.*;
@@ -21,8 +18,8 @@ public class Team implements Serializable, Comparable<Team>  {
     private final StringProperty name = new SimpleStringProperty(this, "name");
     private Set<PersonTeam> personTeams = new LinkedHashSet<>();
 
-    public Team(String s) {
-        this.name.set(s);
+    public Team(String name) {
+        this.name.set(name);
     }
 
     public Team() {}
@@ -52,7 +49,7 @@ public class Team implements Serializable, Comparable<Team>  {
         return name;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.team", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "team", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     public Set<PersonTeam> getPersonTeams() {
         return personTeams;
     }
@@ -92,6 +89,6 @@ public class Team implements Serializable, Comparable<Team>  {
 
     @Override
     public int compareTo(Team o) {
-        return 0;
+        return Long.compare(getId(), o.getId());
     }
 }
