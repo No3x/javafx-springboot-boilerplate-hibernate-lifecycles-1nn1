@@ -17,7 +17,7 @@ import java.util.Set;
  */
 @Entity
 public class Team implements Serializable, Comparable<Team>  {
-    private final IntegerProperty id = new SimpleIntegerProperty(this, "id");
+    private final LongProperty id = new SimpleLongProperty(this, "id");
     private final StringProperty name = new SimpleStringProperty(this, "name");
     private Set<PersonTeam> personTeams = new LinkedHashSet<>();
 
@@ -30,14 +30,14 @@ public class Team implements Serializable, Comparable<Team>  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    public Integer getId() {
+    public Long getId() {
         return id.get();
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id.set(id);
     }
-    public IntegerProperty idProperty() {
+    public LongProperty idProperty() {
         return id;
     }
     @Basic
