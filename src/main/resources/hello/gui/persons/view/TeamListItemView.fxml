@@ -6,7 +6,7 @@
 
 <HBox alignment="BASELINE_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       spacing="6.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="hello.gui.persons.PersonListItemView">
+      fx:controller="hello.gui.persons.view.TeamListItemView">
     <children>
         <Label fx:id="titleLabel" style="-fx-font-size: 1em;" text="Title"/>
         <Label fx:id="identifierLabel" style="-fx-font-size: 0.8em;" text="Identifier"/>

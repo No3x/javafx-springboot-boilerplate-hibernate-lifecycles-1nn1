@@ -1,4 +1,4 @@
-package hello.gui.personsedit;
+package hello.gui.persons.edit;
 
 /**
  * Created by No3x on 08.08.2017.
@@ -8,7 +8,7 @@ import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
 import hello.data.repository.CustomerRepository;
-import hello.gui.persons.PersonListItemViewModel;
+import hello.gui.persons.view.PersonListItemViewModel;
 import hello.gui.scopes.PersonDetailScope;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;

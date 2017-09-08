@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="hello.gui.persons.PersonListView">
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="hello.gui.persons.view.PersonListView">
 <children>
     <ListView fx:id="personsListView" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" />
     <Button accessibleHelp="R" accessibleRoleDescription="B" accessibleText="T" mnemonicParsing="false" onAction="#randomAction" text="Create Random" GridPane.columnIndex="1" GridPane.rowIndex="1" />

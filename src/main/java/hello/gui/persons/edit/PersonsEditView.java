@@ -1,4 +1,4 @@
-package hello.gui.personsedit;
+package hello.gui.persons.edit;
 
 /**
  * Created by No3x on 08.08.2017.

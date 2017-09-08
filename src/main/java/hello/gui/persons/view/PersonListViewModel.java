@@ -1,4 +1,4 @@
-package hello.gui.persons;
+package hello.gui.persons.view;
 
 import com.google.common.collect.Streams;
 import de.saxsys.mvvmfx.*;
@@ -9,8 +9,8 @@ import hello.data.model.PersonTeam;
 import hello.data.model.Team;
 import hello.data.repository.PersonRepository;
 import hello.gui.WindowManager;
-import hello.gui.personsedit.PersonsEditView;
-import hello.gui.personsedit.PersonsEditViewModel;
+import hello.gui.persons.edit.PersonsEditView;
+import hello.gui.persons.edit.PersonsEditViewModel;
 import hello.gui.scopes.PersonDetailScope;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;

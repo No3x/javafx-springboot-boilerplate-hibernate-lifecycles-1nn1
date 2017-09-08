@@ -1,4 +1,4 @@
-package hello.gui.persons;
+package hello.gui.persons.view;
 
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;

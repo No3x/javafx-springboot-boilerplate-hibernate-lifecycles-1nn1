@@ -4,7 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hello.gui.personsedit.PersonsEditView">
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hello.gui.persons.edit.PersonsEditView">
     <children>
         <Label fx:id="helloLabel" text="Placeh" />
         <Label fx:id="personSelectedName" />

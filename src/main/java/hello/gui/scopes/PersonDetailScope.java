@@ -1,7 +1,7 @@
 package hello.gui.scopes;
 
 import de.saxsys.mvvmfx.Scope;
-import hello.gui.persons.PersonListItemViewModel;
+import hello.gui.persons.view.PersonListItemViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.springframework.stereotype.Component;
