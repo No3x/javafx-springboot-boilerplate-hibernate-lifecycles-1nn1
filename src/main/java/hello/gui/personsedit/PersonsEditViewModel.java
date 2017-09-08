@@ -7,8 +7,8 @@ package hello.gui.personsedit;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
-import hello.data.model.Person;
 import hello.data.repository.CustomerRepository;
+import hello.gui.persons.PersonListItemViewModel;
 import hello.gui.scopes.PersonDetailScope;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -47,9 +47,10 @@ public class PersonsEditViewModel implements ViewModel {
         helloMessage.set("Clicked");
     }
 
-    public ObjectProperty<Person> selectedPersonProperty() {
-        if( null == scope.selectedPersonProperty().get() )
+    public ObjectProperty<PersonListItemViewModel> selectedPersonProperty() {
+        if( null == scope.selectedPersonProperty().get() ) {
             throw new IllegalStateException("There is no person selected! This is crucial for the process.");
+        }
 
         return scope.selectedPersonProperty();
     }

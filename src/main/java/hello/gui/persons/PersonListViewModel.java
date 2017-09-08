@@ -1,9 +1,12 @@
 package hello.gui.persons;
 
+import com.google.common.collect.Streams;
 import de.saxsys.mvvmfx.*;
 import de.saxsys.mvvmfx.utils.commands.Action;
 import de.saxsys.mvvmfx.utils.commands.DelegateCommand;
 import hello.data.model.Person;
+import hello.data.model.PersonTeam;
+import hello.data.model.Team;
 import hello.data.repository.PersonRepository;
 import hello.gui.WindowManager;
 import hello.gui.personsedit.PersonsEditView;
@@ -13,8 +16,12 @@ import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.kohsuke.randname.RandomNameGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 /**
  * Created by No3x on 11.08.2017.
@@ -23,11 +30,14 @@ import org.springframework.stereotype.Component;
 @ScopeProvider(scopes = {PersonDetailScope.class})
 public class PersonListViewModel implements ViewModel {
 
+    private static final Logger log = LoggerFactory.getLogger(PersonListViewModel.class);
+
     private final PersonRepository personRepository;
     private final RandomNameGenerator randomNameGenerator;
     private final WindowManager windowManager;
 
-    private ObservableList<Person> persons = FXCollections.observableArrayList();
+    private ObservableList<PersonListItemViewModel> persons = FXCollections.observableArrayList();
+    private ObservableList<TeamListItemViewModel> teams = FXCollections.observableArrayList();
 
     @InjectScope
     private PersonDetailScope scope;
@@ -39,7 +49,10 @@ public class PersonListViewModel implements ViewModel {
         this.windowManager = windowManager;
         this.personRepository = personRepository;
         this.randomNameGenerator = randomNameGenerator;
+    }
 
+    public void initialize() {
+        log.debug("Init");
         gotoDelegateCommand = new DelegateCommand(() -> new Action() {
             @Override
             protected void action() throws Exception {
@@ -52,21 +65,39 @@ public class PersonListViewModel implements ViewModel {
             protected void action() throws Exception {
                 gotoDetail();
             }
-        }, scope.selectedPersonProperty().isNotNull(), false);
+        }, scope.selectedPersonProperty()
+                .isNotNull(), false);
+
+        scope.selectedPersonProperty().addListener((observable, oldValue, newValue) -> {
+            if( selectedPersonProperty().get() != null ) {
+                teams.clear();
+                selectedPersonProperty().get()
+                                        .getPerson()
+                                        .getPersonTeams()
+                                        .stream()
+                                        .map(PersonTeam::getTeam)
+                                        .map(TeamListItemViewModel::new)
+                                        .forEach(teams::add);
+            }
+        });
 
         initData();
     }
 
     private void initData() {
+        log.debug("Init data");
         persons.clear();
-        personRepository.findAll().forEach(persons::add);
+
+        Streams.stream(personRepository.findAll())
+               .map(PersonListItemViewModel::new)
+               .forEach(persons::add);
     }
 
-    public ObjectProperty<Person> selectedPersonProperty() {
+    public ObjectProperty<PersonListItemViewModel> selectedPersonProperty() {
         return scope.selectedPersonProperty();
     }
 
-    public ObservableList<Person> personsProperty() {
+    public ObservableList<PersonListItemViewModel> personsProperty() {
         return persons;
     }
 
@@ -79,13 +110,21 @@ public class PersonListViewModel implements ViewModel {
     }
 
     private void random() {
+        log.debug("Create random");
         final Person person = new Person(randomNameGenerator.next());
+        final Team team = new Team(randomNameGenerator.next());
+        person.addTeam(team, "random", new Date());
         personRepository.save(person);
         initData();
     }
 
     private void gotoDetail() {
+        log.debug("Go to detail");
         final ViewTuple<PersonsEditView, PersonsEditViewModel> viewTuple = FluentViewLoader.fxmlView(PersonsEditView.class).load();
         windowManager.createWindow(viewTuple.getView()).show();
+    }
+
+    public ObservableList<TeamListItemViewModel> teamsProperty() {
+        return teams;
     }
 }

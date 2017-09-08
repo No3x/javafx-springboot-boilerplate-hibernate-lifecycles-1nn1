@@ -1,7 +1,7 @@
 package hello.gui.scopes;
 
 import de.saxsys.mvvmfx.Scope;
-import hello.data.model.Person;
+import hello.gui.persons.PersonListItemViewModel;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.springframework.stereotype.Component;
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class PersonDetailScope implements Scope {
 
-    private ObjectProperty<Person> selectedPerson = new SimpleObjectProperty();
+    private ObjectProperty<PersonListItemViewModel> selectedPerson = new SimpleObjectProperty<>();
 
-    public ObjectProperty<Person> selectedPersonProperty() {
+    public ObjectProperty<PersonListItemViewModel> selectedPersonProperty() {
         return selectedPerson;
     }
 }

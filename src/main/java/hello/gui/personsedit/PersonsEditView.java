@@ -30,7 +30,7 @@ public class PersonsEditView implements FxmlView<PersonsEditViewModel>, Initiali
     public void initialize(URL url, ResourceBundle resourceBundle) {
         helloLabel.textProperty().bind(viewModel.helloMessageProperty());
         helloLabel.setOnMouseClicked(event -> viewModel.onAction());
-        personSelectedName.textProperty().bind(viewModel.selectedPersonProperty().get().nameProperty());
+        personSelectedName.textProperty().bind(viewModel.selectedPersonProperty().get().getPerson().nameProperty());
     }
 
 }

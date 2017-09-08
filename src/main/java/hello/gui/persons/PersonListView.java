@@ -2,8 +2,7 @@ package hello.gui.persons;
 
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
-import hello.data.model.Person;
-import hello.data.model.Team;
+import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
 import hello.utils.JavaFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,10 +20,10 @@ import java.util.ResourceBundle;
 public class PersonListView implements FxmlView<PersonListViewModel>, Initializable {
 
     @FXML
-    private ListView<Person> personsListView;
+    private ListView<PersonListItemViewModel> personsListView;
 
     @FXML
-    private ListView<Team> teamsOfSelected;
+    private ListView<TeamListItemViewModel> teamsOfSelected;
 
     @InjectViewModel
     private PersonListViewModel personListViewModel;
@@ -32,12 +31,16 @@ public class PersonListView implements FxmlView<PersonListViewModel>, Initializa
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         personsListView.setItems((personListViewModel.personsProperty()));
+        personsListView.setCellFactory(CachedViewModelCellFactory.createForFxmlView(PersonListItemView.class));
 
-        personListViewModel.selectedPersonProperty().bind(personsListView.getSelectionModel().selectedItemProperty());
+        teamsOfSelected.setItems((personListViewModel.teamsProperty()));
+        teamsOfSelected.setCellFactory(CachedViewModelCellFactory.createForFxmlView(TeamListItemView.class));
 
         personsListView.setOnMouseClicked(event -> {
             if (JavaFXUtils.isDoubleClick(event)) {
                 gotoDetailAction();
+            } else {
+                personListViewModel.selectedPersonProperty().set(personsListView.getSelectionModel().getSelectedItem());
             }
         });
     }
