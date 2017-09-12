@@ -7,8 +7,11 @@ package hello.data.model;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.hibernate.LazyInitializationException;
+import org.hibernate.PropertyAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.jpa.JpaSystemException;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -59,14 +62,21 @@ public class Person {
         return name;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade={CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "person", cascade={CascadeType.PERSIST, CascadeType.MERGE})
     public Set<PersonTeam> getPersonTeams() {
         return personTeams;
     }
 
     public void setPersonTeams(Set<PersonTeam> personTeams) {
         this.personTeams = personTeams;
-        teams.setAll(personTeams.stream().map(PersonTeam::getTeam).collect(Collectors.toList()));
+        //TODO: fix
+        if (personTeams != null) {
+            try {
+                teams.setAll(personTeams.stream().map(PersonTeam::getTeam).collect(Collectors.toList()));
+            } catch (Exception e) {
+                LOG.debug(e.getMessage());
+            }
+        }
     }
 
     @Override

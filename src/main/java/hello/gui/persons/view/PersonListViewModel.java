@@ -121,7 +121,7 @@ public class PersonListViewModel implements ViewModel {
     private void gotoDetail() {
         log.debug("Go to detail");
         final ViewTuple<PersonsEditView, PersonsEditViewModel> viewTuple = FluentViewLoader.fxmlView(PersonsEditView.class).load();
-        windowManager.createWindow(viewTuple.getView()).show();
+        windowManager.createWindow(viewTuple.getView()).showAndWait();
     }
 
     public ObservableList<TeamListItemViewModel> teamsProperty() {

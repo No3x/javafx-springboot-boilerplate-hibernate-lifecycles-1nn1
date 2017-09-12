@@ -49,7 +49,7 @@ public class Team implements Serializable, Comparable<Team>  {
         return name;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "team", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "team", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     public Set<PersonTeam> getPersonTeams() {
         return personTeams;
     }

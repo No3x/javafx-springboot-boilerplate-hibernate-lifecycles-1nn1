@@ -18,11 +18,11 @@ public class PersonTeam implements java.io.Serializable {
     @EmbeddedId
     private PersonTeamPk pk;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @MapsId("personId")
     private Person person;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @MapsId("teamId")
     private Team team;
 
