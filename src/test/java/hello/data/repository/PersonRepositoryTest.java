@@ -121,16 +121,24 @@ public class PersonRepositoryTest {
 
     @Test
     public void whenRemovingAPersonFromATeam_thenTheTeamIsNotDeleted() {
-        Person alex = new Person("alex");
-        Team t = new Team("team");
-        PersonTeam personTeam = alex.addTeam(t, "integrationTest", new Date());
+        // given
+        PersonTeamPair created = createPersonAndTransitiveTeam();
+
         // when
-        personTeamRepository.save(personTeam);
+        created.getPerson().removeTeam(created.getTeam());
+        personRepository.save(created.getPerson());
+
         // then
         final ArrayList<PersonTeam> personTeams = Lists.newArrayList(personTeamRepository.findAll());
-        Assert.assertThat( personTeams.size(), is(1) );
-        Assert.assertThat( personTeams.get(0).getPerson().getName(), is("alex") );
-        Assert.assertThat( personTeams.get(0).getTeam().getName(), is("team") );
+        Assert.assertThat( personTeams.size(), is(0) );
+
+        final ArrayList<Person> persons = Lists.newArrayList(personRepository.findAll());
+        Assert.assertThat( persons.size(), is(1) );
+        Assert.assertThat( persons.get(0).getName(), is("alex") );
+
+        final ArrayList<Team> teams = Lists.newArrayList(teamRepository.findAll());
+        Assert.assertThat( teams.size(), is(1) );
+        Assert.assertThat( teams.get(0).getName(), is("team") );
     }
 
     private static class PersonTeamPair {

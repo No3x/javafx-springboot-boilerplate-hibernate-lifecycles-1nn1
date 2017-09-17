@@ -51,7 +51,7 @@ public class Team implements Serializable, Comparable<Team>  {
         return name;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "team", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "team", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     public List<PersonTeam> getPersonTeams() {
         return personTeams;
     }

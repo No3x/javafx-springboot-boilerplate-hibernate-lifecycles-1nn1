@@ -46,7 +46,7 @@ public class Person {
         this.name = name;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "person", cascade={CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "person", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     public List<PersonTeam> getPersonTeams() {
         return personTeams;
     }
