@@ -39,9 +39,8 @@ public class PersonListView implements FxmlView<PersonListViewModel>, Initializa
         personsListView.setOnMouseClicked(event -> {
             if (JavaFXUtils.isDoubleClick(event)) {
                 gotoDetailAction();
-                personListViewModel.initialize();
             } else {
-                personListViewModel.selectedPersonProperty().set(personsListView.getSelectionModel().getSelectedItem());
+                personListViewModel.selectedPersonProperty().set(personsListView.getSelectionModel().getSelectedItem().getPerson());
             }
         });
     }

@@ -1,13 +1,15 @@
 package hello.data.model;
 
 import javafx.beans.Observable;
-import javafx.beans.property.*;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.util.Callback;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by No3x on 11.08.2017.
@@ -16,7 +18,7 @@ import java.util.Set;
 public class Team implements Serializable, Comparable<Team>  {
     private final LongProperty id = new SimpleLongProperty(this, "id");
     private final StringProperty name = new SimpleStringProperty(this, "name");
-    private Set<PersonTeam> personTeams = new LinkedHashSet<>();
+    private List<PersonTeam> personTeams = new ArrayList<>();
 
     public Team(String name) {
         this.name.set(name);
@@ -50,11 +52,11 @@ public class Team implements Serializable, Comparable<Team>  {
     }
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "team", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    public Set<PersonTeam> getPersonTeams() {
+    public List<PersonTeam> getPersonTeams() {
         return personTeams;
     }
 
-    public void setPersonTeams(Set<PersonTeam> personTeams) {
+    public void setPersonTeams(List<PersonTeam> personTeams) {
         this.personTeams = personTeams;
     }
 
@@ -67,17 +69,15 @@ public class Team implements Serializable, Comparable<Team>  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Team team = (Team) o;
+        Team that = (Team) o;
 
-        if (getId() != null ? !getId().equals(team.getId()) : team.getId() != null) return false;
-        if (getName() != null ? !getName().equals(team.getName()) : team.getName() != null) return false;
-
-        return true;
+        return Objects.equals(getId(), that.getId()) &&
+            Objects.equals(getName(), that.getName());
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = id != null ? getId().hashCode() : 0;
         result = 31 * result + (getName() != null ? getName().hashCode() : 0);
         return result;
     }

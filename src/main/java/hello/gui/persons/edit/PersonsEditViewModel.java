@@ -9,12 +9,12 @@ import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.commands.Action;
-import de.saxsys.mvvmfx.utils.commands.Command;
 import de.saxsys.mvvmfx.utils.commands.DelegateCommand;
+import hello.data.adapter.ListCompare;
+import hello.data.model.Person;
 import hello.data.model.Team;
 import hello.data.repository.PersonRepository;
 import hello.data.repository.TeamRepository;
-import hello.gui.persons.view.PersonListItemViewModel;
 import hello.gui.scopes.PersonDetailScope;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -23,9 +23,13 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
+@Scope("prototype")
 @ScopeProvider(scopes = {PersonDetailScope.class})
 public class PersonsEditViewModel implements ViewModel {
 
@@ -51,9 +55,9 @@ public class PersonsEditViewModel implements ViewModel {
     @InjectScope
     private PersonDetailScope scope;
 
-    private final Command saveCommand;
-    private final Command addTeamCommand;
-    private final Command removeTeamCommand;
+    private final DelegateCommand saveCommand;
+    private final DelegateCommand addTeamCommand;
+    private final DelegateCommand removeTeamCommand;
 
     public PersonsEditViewModel() {
         saveCommand = new DelegateCommand(() -> new Action() {
@@ -61,7 +65,7 @@ public class PersonsEditViewModel implements ViewModel {
             protected void action() throws Exception {
                 save();
             }
-        });
+        }, false);
         addTeamCommand = new DelegateCommand(() -> new Action() {
             @Override
             protected void action() throws Exception {
@@ -77,13 +81,9 @@ public class PersonsEditViewModel implements ViewModel {
     }
 
     public void initialize() {
-        nameProperty.bind(selectedPersonProperty().get().titleProperty());
+        nameProperty.set(selectedPersonProperty().get().getName());
         teams.setAll(Lists.newArrayList(teamRepository.findAll()));
-        teamsOfSelected.setAll(Lists.newArrayList(selectedPersonProperty().get().getPerson().getTeams()));
-    }
-
-    private void removeTeam() {
-
+        teamsOfSelected.setAll(Lists.newArrayList(selectedPersonProperty().get().getTeams()));
     }
 
     private void addTeam() {
@@ -92,12 +92,28 @@ public class PersonsEditViewModel implements ViewModel {
             teamsOfSelected.add(selectedTeam);
         }
     }
-    
-    protected void save() {
-        personRepository.save(scope.selectedPersonProperty().get().getPerson());
+
+    private void removeTeam() {
+        final Team selectedTeam = personEditContext.teamOfCombobox.get();
+        teamsOfSelected.remove(selectedTeam);
     }
 
-    public StringProperty namePropertyProperty() {
+    private void save() {
+        new ListCompare<>(teamsOfSelected, scope.selectedPersonProperty().get().getTeams(), new ListCompare.IChangeAction<Team>() {
+            @Override
+            public void added(Iterable<? extends Team> added) {
+                added.forEach( team -> scope.selectedPersonProperty().get().addTeam(team, "GUI", new Date()));
+            }
+            @Override
+            public void removed(Iterable<? extends Team> removed) {
+                removed.forEach(team -> scope.selectedPersonProperty().get().removeTeam(team));
+            }
+        }).manageChanges();
+        selectedPersonProperty().get().setName(nameProperty.get());
+        selectedPersonProperty().set(personRepository.save(scope.selectedPersonProperty().get()));
+    }
+
+    public StringProperty nameProperty() {
         return nameProperty;
     }
 
@@ -113,7 +129,7 @@ public class PersonsEditViewModel implements ViewModel {
         nameProperty.set("Clicked");
     }
 
-    public ObjectProperty<PersonListItemViewModel> selectedPersonProperty() {
+    public ObjectProperty<Person> selectedPersonProperty() {
         if( null == scope.selectedPersonProperty().get() ) {
             throw new IllegalStateException("There is no person selected! This is crucial for the process.");
         }
@@ -121,15 +137,15 @@ public class PersonsEditViewModel implements ViewModel {
         return scope.selectedPersonProperty();
     }
 
-    public Command getSaveCommand() {
+    public DelegateCommand getSaveCommand() {
         return saveCommand;
     }
 
-    public Command getAddTeamCommand() {
+    public DelegateCommand getAddTeamCommand() {
         return addTeamCommand;
     }
 
-    public Command getRemoveTeamCommand() {
+    public DelegateCommand getRemoveTeamCommand() {
         return removeTeamCommand;
     }
 

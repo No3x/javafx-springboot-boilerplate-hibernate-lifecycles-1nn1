@@ -8,6 +8,7 @@ import hello.data.model.Person;
 import hello.data.model.PersonTeam;
 import hello.data.model.Team;
 import hello.data.repository.PersonRepository;
+import hello.data.repository.PersonTeamRepository;
 import hello.gui.WindowManager;
 import hello.gui.persons.edit.PersonsEditView;
 import hello.gui.persons.edit.PersonsEditViewModel;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 /**
  * Created by No3x on 11.08.2017.
@@ -30,10 +32,11 @@ import java.util.Date;
 @ScopeProvider(scopes = {PersonDetailScope.class})
 public class PersonListViewModel implements ViewModel {
 
-    private static final Logger log = LoggerFactory.getLogger(PersonListViewModel.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PersonListViewModel.class);
 
     private final PersonRepository personRepository;
     private final RandomNameGenerator randomNameGenerator;
+    private final PersonTeamRepository personTeamRepository;
     private final WindowManager windowManager;
 
     private ObservableList<PersonListItemViewModel> persons = FXCollections.observableArrayList();
@@ -41,19 +44,20 @@ public class PersonListViewModel implements ViewModel {
 
     @InjectScope
     private PersonDetailScope scope;
-    private DelegateCommand gotoDelegateCommand;
+    private DelegateCommand randomCommand;
     private DelegateCommand gotoDetailDelegateCommand;
 
     @Autowired
-    public PersonListViewModel(PersonRepository personRepository, WindowManager windowManager, RandomNameGenerator randomNameGenerator) {
+    public PersonListViewModel(PersonRepository personRepository, PersonTeamRepository personTeamRepository, WindowManager windowManager, RandomNameGenerator randomNameGenerator) {
+        this.personTeamRepository = personTeamRepository;
         this.windowManager = windowManager;
         this.personRepository = personRepository;
         this.randomNameGenerator = randomNameGenerator;
     }
 
     public void initialize() {
-        log.debug("Init");
-        gotoDelegateCommand = new DelegateCommand(() -> new Action() {
+        LOG.debug("Init");
+        randomCommand = new DelegateCommand(() -> new Action() {
             @Override
             protected void action() throws Exception {
                 random();
@@ -69,10 +73,10 @@ public class PersonListViewModel implements ViewModel {
                 .isNotNull(), false);
 
         scope.selectedPersonProperty().addListener((observable, oldValue, newValue) -> {
+            LOG.debug("selected person changed");
             if( selectedPersonProperty().get() != null ) {
                 teams.clear();
                 selectedPersonProperty().get()
-                                        .getPerson()
                                         .getPersonTeams()
                                         .stream()
                                         .map(PersonTeam::getTeam)
@@ -85,15 +89,13 @@ public class PersonListViewModel implements ViewModel {
     }
 
     private void initData() {
-        log.debug("Init data");
+        LOG.debug("Init data");
         persons.clear();
-
-        Streams.stream(personRepository.findAll())
-               .map(PersonListItemViewModel::new)
-               .forEach(persons::add);
+        persons.setAll(Streams.stream(personRepository.findAll())
+                               .map(PersonListItemViewModel::new).collect(Collectors.toList()));
     }
 
-    public ObjectProperty<PersonListItemViewModel> selectedPersonProperty() {
+    public ObjectProperty<Person> selectedPersonProperty() {
         return scope.selectedPersonProperty();
     }
 
@@ -106,22 +108,23 @@ public class PersonListViewModel implements ViewModel {
     }
 
     public DelegateCommand getRandomCommand() {
-        return gotoDelegateCommand;
+        return randomCommand;
     }
 
     private void random() {
-        log.debug("Create random");
+        LOG.debug("Create random");
         final Person person = new Person(randomNameGenerator.next());
         final Team team = new Team(randomNameGenerator.next());
-        person.addTeam(team, "random", new Date());
-        personRepository.save(person);
+        final PersonTeam relation = person.addTeam(team, "random", new Date());
+        personTeamRepository.save(relation);
         initData();
     }
 
     private void gotoDetail() {
-        log.debug("Go to detail");
+        LOG.debug("Go to detail");
         final ViewTuple<PersonsEditView, PersonsEditViewModel> viewTuple = FluentViewLoader.fxmlView(PersonsEditView.class).load();
         windowManager.createWindow(viewTuple.getView()).showAndWait();
+        initData();
     }
 
     public ObservableList<TeamListItemViewModel> teamsProperty() {

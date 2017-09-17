@@ -14,12 +14,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 @Component
+@Scope("prototype")
 public class PersonsEditView implements FxmlView<PersonsEditViewModel>, Initializable {
     @FXML
     private TextField name;
@@ -35,10 +37,7 @@ public class PersonsEditView implements FxmlView<PersonsEditViewModel>, Initiali
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //helloLabel.textProperty().bind(viewModel.namePropertyProperty());
-        //helloLabel.setOnMouseClicked(event -> viewModel.onAction());
-        name.textProperty().bindBidirectional(viewModel.selectedPersonProperty().get().getPerson().nameProperty());
-
+        name.textProperty().bindBidirectional(viewModel.nameProperty());
         Bindings.bindContent(teamCombobox.getItems(), viewModel.getTeams());
         teamCombobox.getSelectionModel().selectFirst();
         teamListview.getItems().setAll(viewModel.getTeamsOfSelected());

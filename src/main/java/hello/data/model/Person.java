@@ -4,20 +4,11 @@ package hello.data.model;
  * Created by No3x on 11.08.2017.
  */
 
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import org.hibernate.LazyInitializationException;
-import org.hibernate.PropertyAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.jpa.JpaSystemException;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -25,58 +16,48 @@ import java.util.stream.Collectors;
 @Entity
 public class Person {
     private static final Logger LOG = LoggerFactory.getLogger(Person.class);
-    private final LongProperty id = new SimpleLongProperty(this, "id");
-    private final StringProperty name = new SimpleStringProperty(this, "name");
-    private Set<PersonTeam> personTeams = new LinkedHashSet<>();
-
-    private ListProperty<Team> teams = new SimpleListProperty<>(this, "teams", FXCollections.observableArrayList());
-
-    public Person(String s) {
-        this.name.set(s);
-    }
+    private Long id;
+    private String name;
+    private List<PersonTeam> personTeams = new ArrayList<>();
 
     public Person() {}
+
+    public Person(String name) {
+        this.name = name;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public Long getId() {
-        return id.get();
+        return id;
     }
 
     public void setId(Long id) {
-        this.id.set(id);
+        this.id = id;
     }
-    public LongProperty idProperty() {
-        return id;
-    }
+
     @Basic
     @Column(name = "name")
     public String getName() {
-        return name.get();
+        return name;
     }
     public void setName(String name) {
-        this.name.set(name);
-    }
-    public StringProperty nameProperty() {
-        return name;
+        this.name = name;
     }
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "person", cascade={CascadeType.PERSIST, CascadeType.MERGE})
-    public Set<PersonTeam> getPersonTeams() {
+    public List<PersonTeam> getPersonTeams() {
         return personTeams;
     }
 
-    public void setPersonTeams(Set<PersonTeam> personTeams) {
+    /**
+     * The setter is called by hibernate.
+     * @param personTeams maybe null, maybe the collection is not even ready for read access.
+     *                    Don't do anything with the collection here!
+     */
+    public void setPersonTeams(List<PersonTeam> personTeams) {
         this.personTeams = personTeams;
-        //TODO: fix
-        if (personTeams != null) {
-            try {
-                teams.setAll(personTeams.stream().map(PersonTeam::getTeam).collect(Collectors.toList()));
-            } catch (Exception e) {
-                LOG.debug(e.getMessage());
-            }
-        }
     }
 
     @Override
@@ -84,17 +65,15 @@ public class Person {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Person person = (Person) o;
+        Person that = (Person) o;
 
-        if (getId() != null ? !getId().equals(person.getId()) : person.getId() != null) return false;
-        if (getName() != null ? !getName().equals(person.getName()) : person.getName() != null) return false;
-
-        return true;
+        return Objects.equals(getId(), that.getId()) &&
+            Objects.equals(getName(), that.getName());
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
+        int result = id != null ? getId().hashCode() : 0;
         result = 31 * result + (getName() != null ? getName().hashCode() : 0);
         return result;
     }
@@ -104,13 +83,8 @@ public class Person {
      * Unfortunately there is no RO Observable List Interface to refer to.
      */
     @Transient
-    public ObservableList<Team> getTeams() {
-        return teams.get();
-    }
-
-    @Transient
-    public ReadOnlyListProperty<Team> teamsProperty() {
-        return teams;
+    public List<Team> getTeams() {
+        return getPersonTeams().stream().map(PersonTeam::getTeam).collect(Collectors.toList());
     }
 
     public PersonTeam addTeam(Team team, String createdBy, Date createdDate) {
@@ -123,7 +97,7 @@ public class Person {
         if( !team.getPersonTeams().add( personTeam ) ) {
             LOG.error("Failed to add personTeam " + personTeam + " to collection team.getPersonTeams " + team.getPersonTeams());
         }
-        teams.setAll(personTeams.stream().map(PersonTeam::getTeam).collect(Collectors.toList()));
+
         return personTeam;
     }
 
@@ -141,8 +115,6 @@ public class Person {
                 personTeam.setTeam(null);
             }
         }
-
-        teams.setAll(personTeams.stream().map(PersonTeam::getTeam).collect(Collectors.toList()));
     }
 
     /*
@@ -151,7 +123,7 @@ public class Person {
      */
     @Override
     public String toString() {
-        return name.getValue();
+        return name;
     }
 
 }
