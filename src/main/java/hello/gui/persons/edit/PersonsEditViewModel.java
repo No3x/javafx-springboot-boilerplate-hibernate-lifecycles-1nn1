@@ -125,10 +125,6 @@ public class PersonsEditViewModel implements ViewModel {
         nameProperty.set(message);
     }
 
-    public void onAction() {
-        nameProperty.set("Clicked");
-    }
-
     public ObjectProperty<Person> selectedPersonProperty() {
         if( null == scope.selectedPersonProperty().get() ) {
             throw new IllegalStateException("There is no person selected! This is crucial for the process.");
