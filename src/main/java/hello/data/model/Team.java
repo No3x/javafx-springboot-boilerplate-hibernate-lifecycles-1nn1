@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.util.Callback;
 
+import javax.annotation.Nonnull;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
@@ -16,12 +17,12 @@ import java.util.*;
  */
 @Entity
 public class Team implements Serializable, Comparable<Team>  {
-    private final LongProperty id = new SimpleLongProperty(this, "id");
-    private final StringProperty name = new SimpleStringProperty(this, "name");
+    private Long id;
+    private String name;
     private List<PersonTeam> personTeams = new ArrayList<>();
 
     public Team(String name) {
-        this.name.set(name);
+        this.name = name;
     }
 
     public Team() {}
@@ -30,25 +31,20 @@ public class Team implements Serializable, Comparable<Team>  {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public Long getId() {
-        return id.get();
+        return id;
     }
 
     public void setId(Long id) {
-        this.id.set(id);
+        this.id = id;
     }
-    public LongProperty idProperty() {
-        return id;
-    }
+
     @Basic
     @Column(name = "name")
     public String getName() {
-        return name.get();
+        return name;
     }
     public void setName(String name) {
-        this.name.set(name);
-    }
-    public StringProperty nameProperty() {
-        return name;
+        this.name = name;
     }
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "team", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -58,10 +54,6 @@ public class Team implements Serializable, Comparable<Team>  {
 
     public void setPersonTeams(List<PersonTeam> personTeams) {
         this.personTeams = personTeams;
-    }
-
-    public static Callback<Team, Observable[]> extractor() {
-        return (Team p) -> new Observable[]{p.nameProperty()};
     }
 
     @Override
@@ -84,11 +76,11 @@ public class Team implements Serializable, Comparable<Team>  {
 
     @Override
     public String toString() {
-        return name.getValue();
+        return Objects.toString(this);
     }
 
     @Override
-    public int compareTo(Team o) {
+    public int compareTo(@Nonnull Team o) {
         return Long.compare(getId(), o.getId());
     }
 }
