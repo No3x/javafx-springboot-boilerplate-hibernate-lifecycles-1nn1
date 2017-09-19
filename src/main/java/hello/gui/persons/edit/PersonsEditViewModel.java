@@ -10,12 +10,17 @@ import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.commands.Action;
 import de.saxsys.mvvmfx.utils.commands.DelegateCommand;
+import de.saxsys.mvvmfx.utils.validation.CompositeValidator;
+import de.saxsys.mvvmfx.utils.validation.ObservableRuleBasedValidator;
+import de.saxsys.mvvmfx.utils.validation.ValidationMessage;
+import de.saxsys.mvvmfx.utils.validation.ValidationStatus;
 import hello.data.adapter.ListCompare;
 import hello.data.model.Person;
 import hello.data.model.Team;
 import hello.data.repository.PersonRepository;
 import hello.data.repository.TeamRepository;
 import hello.gui.scopes.PersonDetailScope;
+import hello.gui.validators.EmptyListValidator;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -33,12 +38,14 @@ import java.util.Date;
 @ScopeProvider(scopes = {PersonDetailScope.class})
 public class PersonsEditViewModel implements ViewModel {
 
+
     /**
      * Used for View<->ViewModel dependencies.
      * The view is able to communicate with the model and vice versa.
      */
     public class PersonEditContext {
         public ObjectProperty<Team> teamOfCombobox = new SimpleObjectProperty<>();
+        public ObjectProperty<Team> selectedTeam = new SimpleObjectProperty<>();
     }
     PersonEditContext personEditContext = new PersonEditContext();
 
@@ -58,6 +65,10 @@ public class PersonsEditViewModel implements ViewModel {
     private final DelegateCommand saveCommand;
     private final DelegateCommand addTeamCommand;
     private final DelegateCommand removeTeamCommand;
+
+    private ObservableRuleBasedValidator nameValidator;
+    private EmptyListValidator teamsValidator;
+    private CompositeValidator formValidator;
 
     public PersonsEditViewModel() {
         saveCommand = new DelegateCommand(() -> new Action() {
@@ -84,6 +95,14 @@ public class PersonsEditViewModel implements ViewModel {
         nameProperty.set(selectedPersonProperty().get().getName());
         teams.setAll(Lists.newArrayList(teamRepository.findAll()));
         teamsOfSelected.setAll(Lists.newArrayList(selectedPersonProperty().get().getTeams()));
+
+        nameValidator = new ObservableRuleBasedValidator(
+            nameProperty.isNotNull().and(nameProperty.isNotEmpty()),
+            ValidationMessage.error("Name may not be empty"));
+
+        teamsValidator = new EmptyListValidator<>(teamsOfSelected, ValidationMessage.error("List may not be empty"));
+
+        formValidator = new CompositeValidator(nameValidator, teamsValidator);
     }
 
     private void addTeam() {
@@ -94,7 +113,7 @@ public class PersonsEditViewModel implements ViewModel {
     }
 
     private void removeTeam() {
-        final Team selectedTeam = personEditContext.teamOfCombobox.get();
+        final Team selectedTeam = personEditContext.selectedTeam.get();
         teamsOfSelected.remove(selectedTeam);
     }
 
@@ -152,4 +171,18 @@ public class PersonsEditViewModel implements ViewModel {
     public ObservableList<Team> getTeamsOfSelected() {
         return teamsOfSelected;
     }
+
+    public ValidationStatus nameValidation() {
+        return nameValidator.getValidationStatus();
+    }
+
+    public ValidationStatus teamsValidation() {
+        return teamsValidator.getValidationStatus();
+    }
+
+    public ValidationStatus formValidation() {
+        return formValidator.getValidationStatus();
+    }
+
+
 }

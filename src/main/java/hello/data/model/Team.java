@@ -76,7 +76,16 @@ public class Team implements Serializable, Comparable<Team>  {
 
     @Override
     public String toString() {
-        return Objects.toString(this);
+        final StringBuilder sb = new StringBuilder("Team{");
+        sb.append("id=")
+          .append(id);
+        sb.append(", name='")
+          .append(name)
+          .append('\'');
+        sb.append(", personTeams=")
+          .append(personTeams);
+        sb.append('}');
+        return sb.toString();
     }
 
     @Override

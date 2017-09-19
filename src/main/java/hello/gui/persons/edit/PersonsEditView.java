@@ -6,11 +6,14 @@ package hello.gui.persons.edit;
 
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
+import de.saxsys.mvvmfx.utils.validation.visualization.ControlsFxVisualizer;
+import de.saxsys.mvvmfx.utils.validation.visualization.ValidationVisualizer;
 import hello.data.model.Team;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -23,6 +26,10 @@ import java.util.ResourceBundle;
 @Component
 @Scope("prototype")
 public class PersonsEditView implements FxmlView<PersonsEditViewModel>, Initializable {
+
+    @FXML
+    private Button save;
+
     @FXML
     private TextField name;
 
@@ -44,6 +51,13 @@ public class PersonsEditView implements FxmlView<PersonsEditViewModel>, Initiali
         Bindings.bindContent(teamListview.getItems(), viewModel.getTeamsOfSelected());
 
         viewModel.personEditContext.teamOfCombobox.bind(teamCombobox.getSelectionModel().selectedItemProperty());
+        viewModel.personEditContext.selectedTeam.bind(teamListview.getSelectionModel().selectedItemProperty());
+
+        ValidationVisualizer visualizer = new ControlsFxVisualizer();
+        visualizer.initVisualization(viewModel.nameValidation(), name, true);
+        visualizer.initVisualization(viewModel.teamsValidation(), teamListview, true);
+
+        save.disableProperty().bind(viewModel.formValidation().validProperty().not());
     }
 
     public void saveAction(ActionEvent actionEvent) {

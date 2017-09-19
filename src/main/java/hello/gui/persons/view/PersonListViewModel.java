@@ -69,8 +69,7 @@ public class PersonListViewModel implements ViewModel {
             protected void action() throws Exception {
                 gotoDetail();
             }
-        }, scope.selectedPersonProperty()
-                .isNotNull(), false);
+        }, scope.selectedPersonProperty().isNotNull(), false);
 
         scope.selectedPersonProperty().addListener((observable, oldValue, newValue) -> {
             LOG.debug("selected person changed");

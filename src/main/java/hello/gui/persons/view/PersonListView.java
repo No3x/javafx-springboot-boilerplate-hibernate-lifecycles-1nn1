@@ -4,7 +4,6 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
 import hello.utils.JavaFXUtils;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
@@ -26,31 +25,31 @@ public class PersonListView implements FxmlView<PersonListViewModel>, Initializa
     private ListView<TeamListItemViewModel> teamsOfSelected;
 
     @InjectViewModel
-    private PersonListViewModel personListViewModel;
+    private PersonListViewModel viewModel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        personsListView.setItems((personListViewModel.personsProperty()));
+        personsListView.setItems((viewModel.personsProperty()));
         personsListView.setCellFactory(CachedViewModelCellFactory.createForFxmlView(PersonListItemView.class));
 
-        teamsOfSelected.setItems((personListViewModel.teamsProperty()));
+        teamsOfSelected.setItems((viewModel.teamsProperty()));
         teamsOfSelected.setCellFactory(CachedViewModelCellFactory.createForFxmlView(TeamListItemView.class));
 
         personsListView.setOnMouseClicked(event -> {
             if (JavaFXUtils.isDoubleClick(event)) {
                 gotoDetailAction();
             } else {
-                personListViewModel.selectedPersonProperty().set(personsListView.getSelectionModel().getSelectedItem().getPerson());
+                viewModel.selectedPersonProperty().set(personsListView.getSelectionModel().getSelectedItem().getPerson());
             }
         });
     }
 
     public void gotoDetailAction() {
-        personListViewModel.getGotoDetailCommand().execute();
+        viewModel.getGotoDetailCommand().execute();
     }
 
-    public void randomAction(ActionEvent actionEvent) {
-        personListViewModel.getRandomCommand().execute();
+    public void randomAction() {
+        viewModel.getRandomCommand().execute();
     }
 
 }
