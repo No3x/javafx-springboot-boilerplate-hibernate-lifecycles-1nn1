@@ -38,7 +38,6 @@ import java.util.Date;
 @ScopeProvider(scopes = {PersonDetailScope.class})
 public class PersonsEditViewModel implements ViewModel {
 
-
     /**
      * Used for View<->ViewModel dependencies.
      * The view is able to communicate with the model and vice versa.
@@ -96,9 +95,8 @@ public class PersonsEditViewModel implements ViewModel {
         teams.setAll(Lists.newArrayList(teamRepository.findAll()));
         teamsOfSelected.setAll(Lists.newArrayList(selectedPersonProperty().get().getTeams()));
 
-        nameValidator = new ObservableRuleBasedValidator(
-            nameProperty.isNotNull().and(nameProperty.isNotEmpty()),
-            ValidationMessage.error("Name may not be empty"));
+        nameValidator = new ObservableRuleBasedValidator(nameProperty.isNotNull()
+                                                                     .and(nameProperty.isNotEmpty()), ValidationMessage.error("Name may not be empty"));
 
         teamsValidator = new EmptyListValidator<>(teamsOfSelected, ValidationMessage.error("List may not be empty"));
 
@@ -118,18 +116,18 @@ public class PersonsEditViewModel implements ViewModel {
     }
 
     private void save() {
-        new ListCompare<>(teamsOfSelected, scope.selectedPersonProperty().get().getTeams(), new ListCompare.IChangeAction<Team>() {
+        new ListCompare<>(teamsOfSelected, selectedPersonProperty().get().getTeams(), new ListCompare.IChangeAction<Team>() {
             @Override
             public void added(Iterable<? extends Team> added) {
-                added.forEach( team -> scope.selectedPersonProperty().get().addTeam(team, "GUI", new Date()));
+                added.forEach( team -> selectedPersonProperty().get().addTeam(team, "GUI", new Date()));
             }
             @Override
             public void removed(Iterable<? extends Team> removed) {
-                removed.forEach(team -> scope.selectedPersonProperty().get().removeTeam(team));
+                removed.forEach(team -> selectedPersonProperty().get().removeTeam(team));
             }
         }).manageChanges();
         selectedPersonProperty().get().setName(nameProperty.get());
-        selectedPersonProperty().set(personRepository.save(scope.selectedPersonProperty().get()));
+        selectedPersonProperty().set(personRepository.save(selectedPersonProperty().get()));
     }
 
     public StringProperty nameProperty() {
