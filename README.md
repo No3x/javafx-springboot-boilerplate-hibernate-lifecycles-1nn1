@@ -7,7 +7,6 @@ A boilerplate project for JavaFX development with Spring Boot, JPA/Hibernate. It
 - simple sync of elements in `ListView` with the help of `Bean Properties` and `Observable` (changes are synced across different views)
 - a simple window manager concept
 - jpa with hibernate
-- h2 database is created, schema is created automatically. See `persistence.xml`
 - Lifecycle of association in real world use cases: GUI
 - 1nn1 Lifecycle
 - Observable
