@@ -24,6 +24,7 @@ sourceCompatibility = 1.8
 
 repositories {
 	mavenCentral()
+    maven { url "https://jitpack.io" }
 }
 
 
@@ -35,4 +36,5 @@ dependencies {
     compile 'de.saxsys:mvvmfx:1.6.0'
     compile 'de.saxsys:mvvmfx-validation:1.6.0'
     compile 'org.kohsuke:wordnet-random-name:1.3'
+    compile 'com.jfoenix:jfoenix:1.4.0'
 }
