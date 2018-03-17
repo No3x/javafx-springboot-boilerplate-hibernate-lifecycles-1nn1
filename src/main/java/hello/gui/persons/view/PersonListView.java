@@ -39,7 +39,8 @@ public class PersonListView implements FxmlView<PersonListViewModel>, Initializa
             if (JavaFXUtils.isDoubleClick(event)) {
                 gotoDetailAction();
             } else {
-                viewModel.selectedPersonProperty().set(personsListView.getSelectionModel().getSelectedItem().getPerson());
+                //TODO: this should be refactored to an command to prevent coupling to the viewModel, unf. MVVMFx doesn't support params for commands yet
+                viewModel.selectedPersonPropertyId().bind(personsListView.getSelectionModel().getSelectedItem().getId());
             }
         });
     }

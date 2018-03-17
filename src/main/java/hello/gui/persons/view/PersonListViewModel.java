@@ -13,7 +13,7 @@ import hello.gui.WindowManager;
 import hello.gui.persons.edit.PersonsEditView;
 import hello.gui.persons.edit.PersonsEditViewModel;
 import hello.gui.scopes.PersonDetailScope;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.LongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.kohsuke.randname.RandomNameGenerator;
@@ -69,18 +69,17 @@ public class PersonListViewModel implements ViewModel {
             protected void action() throws Exception {
                 gotoDetail();
             }
-        }, scope.selectedPersonProperty().isNotNull(), false);
+        }, scope.selectedPersonIdProperty().isNotEqualTo(0), false);
 
-        scope.selectedPersonProperty().addListener((observable, oldValue, newValue) -> {
+        scope.selectedPersonIdProperty().addListener((observable, oldValue, newValue) -> {
             LOG.debug("selected person changed");
-            if( selectedPersonProperty().get() != null ) {
+            if( selectedPersonPropertyId().get() > 0 ) {
                 teams.clear();
-                selectedPersonProperty().get()
-                                        .getPersonTeams()
-                                        .stream()
-                                        .map(PersonTeam::getTeam)
-                                        .map(TeamListItemViewModel::new)
-                                        .forEach(teams::add);
+                personTeamRepository.findAllByPersonId(selectedPersonPropertyId().get())
+                                          .stream()
+                                          .map(PersonTeam::getTeam)
+                                          .map(TeamListItemViewModel::new)
+                                          .forEach(teams::add);
             }
         });
 
@@ -94,8 +93,8 @@ public class PersonListViewModel implements ViewModel {
                                .map(PersonListItemViewModel::new).collect(Collectors.toList()));
     }
 
-    public ObjectProperty<Person> selectedPersonProperty() {
-        return scope.selectedPersonProperty();
+    public LongProperty selectedPersonPropertyId() {
+        return scope.selectedPersonIdProperty();
     }
 
     public ObservableList<PersonListItemViewModel> personsProperty() {
@@ -114,8 +113,10 @@ public class PersonListViewModel implements ViewModel {
         LOG.debug("Create random");
         final Person person = new Person(randomNameGenerator.next());
         final Team team = new Team(randomNameGenerator.next());
-        final PersonTeam relation = person.addTeam(team, "random", new Date());
-        personTeamRepository.save(relation);
+        final PersonTeam personTeam = new PersonTeam(person, team);
+        personTeam.setCreatedBy("random");
+        personTeam.setCreatedDate(new Date());
+        personTeamRepository.save(personTeam);
         initData();
     }
 

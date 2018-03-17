@@ -18,7 +18,6 @@ public class Person {
     private static final Logger LOG = LoggerFactory.getLogger(Person.class);
     private Long id;
     private String name;
-    private List<PersonTeam> personTeams = new ArrayList<>();
 
     public Person() {}
 
@@ -46,20 +45,6 @@ public class Person {
         this.name = name;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "person", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    public List<PersonTeam> getPersonTeams() {
-        return personTeams;
-    }
-
-    /**
-     * The setter is called by hibernate.
-     * @param personTeams maybe null, maybe the collection is not even ready for read access.
-     *                    Don't do anything with the collection here!
-     */
-    public void setPersonTeams(List<PersonTeam> personTeams) {
-        this.personTeams = personTeams;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -76,45 +61,6 @@ public class Person {
         int result = id != null ? getId().hashCode() : 0;
         result = 31 * result + (getName() != null ? getName().hashCode() : 0);
         return result;
-    }
-
-    /**
-     * Returns an Observable List that must remain unchanged.
-     * Unfortunately there is no RO Observable List Interface to refer to.
-     */
-    @Transient
-    public List<Team> getTeams() {
-        return getPersonTeams().stream().map(PersonTeam::getTeam).collect(Collectors.toList());
-    }
-
-    public PersonTeam addTeam(Team team, String createdBy, Date createdDate) {
-        final PersonTeam personTeam = new PersonTeam(this, team);
-        personTeam.setCreatedBy(createdBy);
-        personTeam.setCreatedDate(createdDate);
-        if( !personTeams.add(personTeam) ) {
-            LOG.error("Failed to add personTeam " + personTeam + " to collection personTeams " + personTeams);
-        }
-        if( !team.getPersonTeams().add( personTeam ) ) {
-            LOG.error("Failed to add personTeam " + personTeam + " to collection team.getPersonTeams " + team.getPersonTeams());
-        }
-
-        return personTeam;
-    }
-
-    public void removeTeam(Team team) {
-
-        for (Iterator<PersonTeam> iterator = personTeams.iterator();
-             iterator.hasNext(); ) {
-            PersonTeam personTeam = iterator.next();
-
-            if (personTeam.getPerson().equals(this) &&
-                personTeam.getTeam().equals(team)) {
-                iterator.remove();
-                team.getPersonTeams().remove(personTeam);
-                personTeam.setPerson(null);
-                personTeam.setTeam(null);
-            }
-        }
     }
 
     /*

@@ -17,7 +17,7 @@ import java.util.*;
  */
 @Entity
 public class Team implements Serializable, Comparable<Team>  {
-    private Long id;
+    private Long id = 0L;
     private String name;
     private List<PersonTeam> personTeams = new ArrayList<>();
 
@@ -45,15 +45,6 @@ public class Team implements Serializable, Comparable<Team>  {
     }
     public void setName(String name) {
         this.name = name;
-    }
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "team", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    public List<PersonTeam> getPersonTeams() {
-        return personTeams;
-    }
-
-    public void setPersonTeams(List<PersonTeam> personTeams) {
-        this.personTeams = personTeams;
     }
 
     @Override

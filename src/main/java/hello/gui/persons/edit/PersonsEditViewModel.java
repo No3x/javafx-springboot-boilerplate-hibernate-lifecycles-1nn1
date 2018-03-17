@@ -14,11 +14,14 @@ import de.saxsys.mvvmfx.utils.validation.CompositeValidator;
 import de.saxsys.mvvmfx.utils.validation.ObservableRuleBasedValidator;
 import de.saxsys.mvvmfx.utils.validation.ValidationMessage;
 import de.saxsys.mvvmfx.utils.validation.ValidationStatus;
-import hello.data.adapter.ListCompare;
 import hello.data.model.Person;
+import hello.data.model.PersonTeam;
+import hello.data.model.PersonTeamPk;
 import hello.data.model.Team;
 import hello.data.repository.PersonRepository;
+import hello.data.repository.PersonTeamRepository;
 import hello.data.repository.TeamRepository;
+import hello.gui.persons.view.TeamListItemViewModel;
 import hello.gui.scopes.PersonDetailScope;
 import hello.gui.validators.EmptyListValidator;
 import javafx.beans.property.ObjectProperty;
@@ -32,6 +35,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
@@ -43,8 +48,8 @@ public class PersonsEditViewModel implements ViewModel {
      * The view is able to communicate with the model and vice versa.
      */
     public class PersonEditContext {
-        public ObjectProperty<Team> teamOfCombobox = new SimpleObjectProperty<>();
-        public ObjectProperty<Team> selectedTeam = new SimpleObjectProperty<>();
+        public ObjectProperty<TeamListItemViewModel> teamOfCombobox = new SimpleObjectProperty<>();
+        public ObjectProperty<TeamListItemViewModel> selectedTeam = new SimpleObjectProperty<>();
     }
     PersonEditContext personEditContext = new PersonEditContext();
 
@@ -54,9 +59,12 @@ public class PersonsEditViewModel implements ViewModel {
     @Autowired
     private TeamRepository teamRepository;
 
+    @Autowired
+    private PersonTeamRepository personTeamRepository;
+
     private final StringProperty nameProperty = new SimpleStringProperty("Hello World");
-    private ObservableList<Team> teams = FXCollections.observableArrayList();
-    private ObservableList<Team> teamsOfSelected = FXCollections.observableArrayList();
+    private ObservableList<TeamListItemViewModel> teams = FXCollections.observableArrayList();
+    private ObservableList<TeamListItemViewModel> teamsOfSelected = FXCollections.observableArrayList();
 
     @InjectScope
     private PersonDetailScope scope;
@@ -91,9 +99,12 @@ public class PersonsEditViewModel implements ViewModel {
     }
 
     public void initialize() {
-        nameProperty.set(selectedPersonProperty().get().getName());
-        teams.setAll(Lists.newArrayList(teamRepository.findAll()));
-        teamsOfSelected.setAll(Lists.newArrayList(selectedPersonProperty().get().getTeams()));
+        nameProperty.set(selectedPerson().getName());
+
+        teams.setAll(Lists.newArrayList(teamRepository.findAll()).stream().map(TeamListItemViewModel::new).collect(Collectors.toList()));
+
+        final List<PersonTeam> allByPersonId = getAllTeamsOfSelectedPerson();
+        teamsOfSelected.setAll(Lists.newArrayList(allByPersonId.stream().map(PersonTeam::getTeam).map(TeamListItemViewModel::new).collect(Collectors.toList())));
 
         nameValidator = new ObservableRuleBasedValidator(nameProperty.isNotNull()
                                                                      .and(nameProperty.isNotEmpty()), ValidationMessage.error("Name may not be empty"));
@@ -103,51 +114,70 @@ public class PersonsEditViewModel implements ViewModel {
         formValidator = new CompositeValidator(nameValidator, teamsValidator);
     }
 
+    private List<PersonTeam> getAllTeamsOfSelectedPerson() {
+        return personTeamRepository.findAllByPersonId(scope.selectedPersonIdProperty().get());
+    }
+
     private void addTeam() {
-        final Team selectedTeam = personEditContext.teamOfCombobox.get();
-        if(teamsOfSelected.stream().noneMatch(team -> team.getName().equals(selectedTeam.getName()))) {
-            teamsOfSelected.add(selectedTeam);
+        final String teamName = personEditContext.teamOfCombobox.get().titleProperty().get();
+        if(teamsOfSelected.stream().noneMatch(team -> team.titleProperty().get().equals(teamName))) {
+            final Team team = new Team();
+            team.setName(teamName);
+            team.setId(personEditContext.teamOfCombobox.get().getId().get());
+            teamsOfSelected.add( new TeamListItemViewModel( team ) );
         }
     }
 
     private void removeTeam() {
-        final Team selectedTeam = personEditContext.selectedTeam.get();
-        teamsOfSelected.remove(selectedTeam);
+        final Long selectedTeamId = personEditContext.selectedTeam.get().getId().get();
+        teamsOfSelected.removeIf(teamListItemViewModel -> teamListItemViewModel.getId().get() == selectedTeamId );
     }
 
     private void save() {
-        new ListCompare<>(teamsOfSelected, selectedPersonProperty().get().getTeams(), new ListCompare.IChangeAction<Team>() {
-            @Override
-            public void added(Iterable<? extends Team> added) {
-                added.forEach( team -> selectedPersonProperty().get().addTeam(team, "GUI", new Date()));
+        List<Long> idsOfSelected = teamsOfSelected.stream().map( pt -> pt.getId().get()).collect(Collectors.toList());
+        List<Long> idsOfSelectedInDatabase = personTeamRepository.findAllByPersonId(selectedPerson().getId()).stream().map(PersonTeam::getPk).map(PersonTeamPk::getTeamId).collect(Collectors.toList());
+
+        for( TeamListItemViewModel t : teamsOfSelected ) {
+            if( !idsOfSelectedInDatabase.contains(t.getId().get())) {
+                final PersonTeam personTeam = new PersonTeam(personRepository.findOne(selectedPerson().getId()), teamRepository.findOne(t.getId()
+                                                                                                                                         .get()));
+                personTeam.setCreatedBy("GUI");
+                personTeam.setCreatedDate( new Date() );
+                personTeamRepository.save(personTeam);
             }
-            @Override
-            public void removed(Iterable<? extends Team> removed) {
-                removed.forEach(team -> selectedPersonProperty().get().removeTeam(team));
+        }
+
+        for( PersonTeam t : getAllTeamsOfSelectedPerson() ) {
+
+            if( !idsOfSelected.contains(t.getPk().getPersonId())) {
+                final PersonTeam oneByPersonAndTeamId = personTeamRepository.findOneByPersonAndTeamId(selectedPerson().getId(), t.getTeam().getId()).orElseThrow(IllegalStateException::new);
+                personTeamRepository.delete( oneByPersonAndTeamId );
             }
-        }).manageChanges();
-        selectedPersonProperty().get().setName(nameProperty.get());
-        selectedPersonProperty().set(personRepository.save(selectedPersonProperty().get()));
+        }
+
+        personRepository.save(selectedPerson());
     }
 
     public StringProperty nameProperty() {
         return nameProperty;
     }
 
-    public String getNameProperty() {
+    public String getName() {
         return nameProperty.get();
     }
 
-    public void setNameProperty(String message) {
+    public void setName(String message) {
         nameProperty.set(message);
     }
 
-    public ObjectProperty<Person> selectedPersonProperty() {
-        if( null == scope.selectedPersonProperty().get() ) {
+    public Person selectedPerson() {
+        final Person selectedPerson = personRepository.findOne(scope.selectedPersonIdProperty().get());
+
+        if( null == selectedPerson ) {
             throw new IllegalStateException("There is no person selected! This is crucial for the process.");
         }
 
-        return scope.selectedPersonProperty();
+        return selectedPerson;
     }
 
     public DelegateCommand getSaveCommand() {
@@ -162,11 +192,11 @@ public class PersonsEditViewModel implements ViewModel {
         return removeTeamCommand;
     }
 
-    public ObservableList<Team> getTeams() {
+    public ObservableList<TeamListItemViewModel> getTeams() {
         return teams;
     }
 
-    public ObservableList<Team> getTeamsOfSelected() {
+    public ObservableList<TeamListItemViewModel> getTeamsOfSelected() {
         return teamsOfSelected;
     }
 

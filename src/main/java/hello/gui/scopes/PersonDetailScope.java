@@ -1,9 +1,8 @@
 package hello.gui.scopes;
 
 import de.saxsys.mvvmfx.Scope;
-import hello.data.model.Person;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,9 +12,10 @@ import org.springframework.stereotype.Component;
 @org.springframework.context.annotation.Scope(value = "singleton")
 public class PersonDetailScope implements Scope {
 
-    private ObjectProperty<Person> selectedPerson = new SimpleObjectProperty<>();
+    private LongProperty selectedPersonId = new SimpleLongProperty();
 
-    public ObjectProperty<Person> selectedPersonProperty() {
-        return selectedPerson;
+    public LongProperty selectedPersonIdProperty() {
+        return selectedPersonId;
     }
+
 }

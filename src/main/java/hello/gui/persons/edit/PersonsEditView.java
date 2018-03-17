@@ -8,7 +8,7 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.validation.visualization.ControlsFxVisualizer;
 import de.saxsys.mvvmfx.utils.validation.visualization.ValidationVisualizer;
-import hello.data.model.Team;
+import hello.gui.persons.view.TeamListItemViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -34,10 +34,10 @@ public class PersonsEditView implements FxmlView<PersonsEditViewModel>, Initiali
     private TextField name;
 
     @FXML
-    private ListView<Team> teamListview;
+    private ListView<TeamListItemViewModel> teamListview;
 
     @FXML
-    private ComboBox<Team> teamCombobox;
+    private ComboBox<TeamListItemViewModel> teamCombobox;
 
     @InjectViewModel
     private PersonsEditViewModel viewModel;

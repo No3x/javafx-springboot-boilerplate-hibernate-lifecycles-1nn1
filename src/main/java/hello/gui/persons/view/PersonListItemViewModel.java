@@ -2,7 +2,9 @@ package hello.gui.persons.view;
 
 import de.saxsys.mvvmfx.ViewModel;
 import hello.data.model.Person;
+import javafx.beans.property.ReadOnlyLongWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ObservableLongValue;
 import javafx.beans.value.ObservableStringValue;
 
 /**
@@ -11,18 +13,14 @@ import javafx.beans.value.ObservableStringValue;
  */
 public class PersonListItemViewModel implements ViewModel {
 
+    private ReadOnlyLongWrapper id = new ReadOnlyLongWrapper();
     private ReadOnlyStringWrapper title = new ReadOnlyStringWrapper();
     private ReadOnlyStringWrapper identifier = new ReadOnlyStringWrapper();
-    private Person person;
 
     public PersonListItemViewModel(Person person) {
-        this.person = person;
+        id.set(person.getId());
         title.set(person.getName());
         identifier.set("(" + person.getId() + ")");
-    }
-
-    public Person getPerson() {
-        return person;
     }
 
     public ObservableStringValue titleProperty() {
@@ -31,5 +29,9 @@ public class PersonListItemViewModel implements ViewModel {
 
     public ObservableStringValue identifierProperty() {
         return identifier.getReadOnlyProperty();
+    }
+
+    public ObservableLongValue getId() {
+        return id.getReadOnlyProperty();
     }
 }

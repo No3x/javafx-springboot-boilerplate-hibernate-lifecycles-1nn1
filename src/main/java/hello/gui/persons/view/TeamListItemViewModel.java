@@ -2,6 +2,8 @@ package hello.gui.persons.view;
 
 import de.saxsys.mvvmfx.ViewModel;
 import hello.data.model.Team;
+import javafx.beans.property.ReadOnlyLongProperty;
+import javafx.beans.property.ReadOnlyLongWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableStringValue;
 
@@ -10,18 +12,14 @@ import javafx.beans.value.ObservableStringValue;
  */
 public class TeamListItemViewModel implements ViewModel {
 
+    private ReadOnlyLongWrapper id = new ReadOnlyLongWrapper();
     private ReadOnlyStringWrapper title = new ReadOnlyStringWrapper();
     private ReadOnlyStringWrapper identifier = new ReadOnlyStringWrapper();
-    private Team team;
 
     public TeamListItemViewModel(Team team) {
-        this.team = team;
+        id.set(team.getId());
         title.set(team.getName());
         identifier.set("(" + team.getId() + ")");
-    }
-
-    public Team getTeam() {
-        return team;
     }
 
     public ObservableStringValue titleProperty() {
@@ -32,4 +30,7 @@ public class TeamListItemViewModel implements ViewModel {
         return identifier.getReadOnlyProperty();
     }
 
+    public ReadOnlyLongProperty getId() {
+        return id.getReadOnlyProperty();
+    }
 }
