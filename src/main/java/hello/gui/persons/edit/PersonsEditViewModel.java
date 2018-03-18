@@ -21,7 +21,7 @@ import hello.data.model.Team;
 import hello.data.repository.PersonRepository;
 import hello.data.repository.PersonTeamRepository;
 import hello.data.repository.TeamRepository;
-import hello.gui.persons.view.TeamListItemViewModel;
+import hello.gui.persons.listitems.TeamListItemViewModel;
 import hello.gui.scopes.PersonDetailScope;
 import hello.gui.validators.EmptyListValidator;
 import javafx.beans.property.ObjectProperty;

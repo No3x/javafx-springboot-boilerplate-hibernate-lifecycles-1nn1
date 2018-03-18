@@ -12,6 +12,8 @@ import hello.data.repository.PersonTeamRepository;
 import hello.gui.WindowManager;
 import hello.gui.persons.edit.PersonsEditView;
 import hello.gui.persons.edit.PersonsEditViewModel;
+import hello.gui.persons.listitems.PersonListItemViewModel;
+import hello.gui.persons.listitems.TeamListItemViewModel;
 import hello.gui.scopes.PersonDetailScope;
 import javafx.beans.property.LongProperty;
 import javafx.collections.FXCollections;
