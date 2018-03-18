@@ -15,7 +15,7 @@ import javafx.collections.ObservableList;
 public class EmptyListValidator<T> implements Validator {
 
     /**
-     * List with capability to observe emtpy property. Contents are always in sync with the origin list.
+     * List with capability to observe empty property. Contents are always in sync with the origin list.
      */
     private final SimpleListProperty<T> proxyList;
 
