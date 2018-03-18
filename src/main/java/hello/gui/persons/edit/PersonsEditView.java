@@ -8,6 +8,9 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.validation.visualization.ControlsFxVisualizer;
 import de.saxsys.mvvmfx.utils.validation.visualization.ValidationVisualizer;
+import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
+import de.saxsys.mvvmfx.utils.viewlist.ViewListCellFactory;
+import hello.gui.persons.view.TeamListItemView;
 import hello.gui.persons.view.TeamListItemViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
@@ -45,9 +48,14 @@ public class PersonsEditView implements FxmlView<PersonsEditViewModel>, Initiali
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         name.textProperty().bindBidirectional(viewModel.nameProperty());
+
+        ViewListCellFactory<TeamListItemViewModel> teamComboboxCellFactory = CachedViewModelCellFactory.createForFxmlView(TeamListItemView.class);
+        teamCombobox.setCellFactory(teamComboboxCellFactory);
         Bindings.bindContent(teamCombobox.getItems(), viewModel.getTeams());
+
         teamCombobox.getSelectionModel().selectFirst();
-        teamListview.getItems().setAll(viewModel.getTeamsOfSelected());
+        ViewListCellFactory<TeamListItemViewModel> teamListviewCellFactory = CachedViewModelCellFactory.createForFxmlView(TeamListItemView.class);
+        teamListview.setCellFactory(teamListviewCellFactory);
         Bindings.bindContent(teamListview.getItems(), viewModel.getTeamsOfSelected());
 
         viewModel.personEditContext.teamOfCombobox.bind(teamCombobox.getSelectionModel().selectedItemProperty());
