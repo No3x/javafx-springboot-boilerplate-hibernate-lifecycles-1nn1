@@ -15,23 +15,17 @@ public class PersonListItemViewModel implements ViewModel {
 
     private ReadOnlyLongWrapper id = new ReadOnlyLongWrapper();
     private ReadOnlyStringWrapper title = new ReadOnlyStringWrapper();
-    private ReadOnlyStringWrapper identifier = new ReadOnlyStringWrapper();
 
     public PersonListItemViewModel(Person person) {
         id.set(person.getId());
         title.set(person.getName());
-        identifier.set("(" + person.getId() + ")");
     }
 
     public ObservableStringValue titleProperty() {
         return title.getReadOnlyProperty();
     }
 
-    public ObservableStringValue identifierProperty() {
-        return identifier.getReadOnlyProperty();
-    }
-
-    public ObservableLongValue getId() {
+    public ObservableLongValue idProperty() {
         return id.getReadOnlyProperty();
     }
 }

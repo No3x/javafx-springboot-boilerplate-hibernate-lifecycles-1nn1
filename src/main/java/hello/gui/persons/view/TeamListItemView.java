@@ -2,6 +2,7 @@ package hello.gui.persons.view;
 
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import org.springframework.context.annotation.Scope;
@@ -23,6 +24,6 @@ public class TeamListItemView implements FxmlView<TeamListItemViewModel> {
 
     public void initialize() {
         titleLabel.textProperty().bind(viewModel.titleProperty());
-        identifierLabel.textProperty().bind(viewModel.identifierProperty());
+        identifierLabel.textProperty().bind(Bindings.concat("(", viewModel.idProperty(), ")"));
     }
 }

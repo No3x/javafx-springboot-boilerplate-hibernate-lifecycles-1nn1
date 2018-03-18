@@ -14,23 +14,17 @@ public class TeamListItemViewModel implements ViewModel {
 
     private ReadOnlyLongWrapper id = new ReadOnlyLongWrapper();
     private ReadOnlyStringWrapper title = new ReadOnlyStringWrapper();
-    private ReadOnlyStringWrapper identifier = new ReadOnlyStringWrapper();
 
     public TeamListItemViewModel(Team team) {
         id.set(team.getId());
         title.set(team.getName());
-        identifier.set("(" + team.getId() + ")");
     }
 
     public ObservableStringValue titleProperty() {
         return title.getReadOnlyProperty();
     }
 
-    public ObservableStringValue identifierProperty() {
-        return identifier.getReadOnlyProperty();
-    }
-
-    public ReadOnlyLongProperty getId() {
+    public ReadOnlyLongProperty idProperty() {
         return id.getReadOnlyProperty();
     }
 }
