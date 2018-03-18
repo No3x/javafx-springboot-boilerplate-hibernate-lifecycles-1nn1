@@ -12,7 +12,7 @@ import java.util.Optional;
  */
 public interface PersonTeamRepository extends CrudRepository<PersonTeam, Long> {
     @Query(value = "SELECT * FROM person_team t where t.person_id = ?1", nativeQuery=true)
-    public List<PersonTeam> findAllByPersonId(Long id);
+    List<PersonTeam> findAllByPersonId(Long id);
     @Query(value = "SELECT * FROM person_team t where t.person_id = ?1 AND t.team_id = ?2", nativeQuery=true)
-    public Optional<PersonTeam> findOneByPersonAndTeamId(Long person, Long team);
+    Optional<PersonTeam> findOneByPersonAndTeamId(Long person, Long team);
 }

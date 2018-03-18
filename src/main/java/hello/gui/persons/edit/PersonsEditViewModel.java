@@ -45,12 +45,13 @@ public class PersonsEditViewModel implements ViewModel {
 
     /**
      * Used for View<->ViewModel dependencies.
-     * The view is able to communicate with the model and vice versa.
+     * The view is able to communicate with the viewmodel and vice versa.
      */
     public class PersonEditContext {
         public ObjectProperty<TeamListItemViewModel> teamOfCombobox = new SimpleObjectProperty<>();
         public ObjectProperty<TeamListItemViewModel> selectedTeam = new SimpleObjectProperty<>();
     }
+
     PersonEditContext personEditContext = new PersonEditContext();
 
     @Autowired
@@ -114,32 +115,29 @@ public class PersonsEditViewModel implements ViewModel {
         formValidator = new CompositeValidator(nameValidator, teamsValidator);
     }
 
-    private List<PersonTeam> getAllTeamsOfSelectedPerson() {
-        return personTeamRepository.findAllByPersonId(scope.selectedPersonIdProperty().get());
-    }
 
     private void addTeam() {
         final String teamName = personEditContext.teamOfCombobox.get().titleProperty().get();
         if(teamsOfSelected.stream().noneMatch(team -> team.titleProperty().get().equals(teamName))) {
             final Team team = new Team();
             team.setName(teamName);
-            team.setId(personEditContext.teamOfCombobox.get().getId().get());
+            team.setId(personEditContext.teamOfCombobox.get().idProperty().get());
             teamsOfSelected.add( new TeamListItemViewModel( team ) );
         }
     }
 
     private void removeTeam() {
-        final Long selectedTeamId = personEditContext.selectedTeam.get().getId().get();
-        teamsOfSelected.removeIf(teamListItemViewModel -> teamListItemViewModel.getId().get() == selectedTeamId );
+        final Long selectedTeamId = personEditContext.selectedTeam.get().idProperty().get();
+        teamsOfSelected.removeIf(teamListItemViewModel -> teamListItemViewModel.idProperty().get() == selectedTeamId );
     }
 
     private void save() {
-        List<Long> idsOfSelected = teamsOfSelected.stream().map( pt -> pt.getId().get()).collect(Collectors.toList());
+        List<Long> idsOfSelected = teamsOfSelected.stream().map( pt -> pt.idProperty().get()).collect(Collectors.toList());
         List<Long> idsOfSelectedInDatabase = personTeamRepository.findAllByPersonId(selectedPerson().getId()).stream().map(PersonTeam::getPk).map(PersonTeamPk::getTeamId).collect(Collectors.toList());
 
         for( TeamListItemViewModel t : teamsOfSelected ) {
-            if( !idsOfSelectedInDatabase.contains(t.getId().get())) {
-                final PersonTeam personTeam = new PersonTeam(personRepository.findOne(selectedPerson().getId()), teamRepository.findOne(t.getId()
+            if( !idsOfSelectedInDatabase.contains(t.idProperty().get())) {
+                final PersonTeam personTeam = new PersonTeam(personRepository.findOne(selectedPerson().getId()), teamRepository.findOne(t.idProperty()
                                                                                                                                          .get()));
                 personTeam.setCreatedBy("GUI");
                 personTeam.setCreatedDate( new Date() );
@@ -148,7 +146,6 @@ public class PersonsEditViewModel implements ViewModel {
         }
 
         for( PersonTeam t : getAllTeamsOfSelectedPerson() ) {
-
             if( !idsOfSelected.contains(t.getPk().getPersonId())) {
                 final PersonTeam oneByPersonAndTeamId = personTeamRepository.findOneByPersonAndTeamId(selectedPerson().getId(), t.getTeam().getId()).orElseThrow(IllegalStateException::new);
                 personTeamRepository.delete( oneByPersonAndTeamId );
@@ -162,14 +159,6 @@ public class PersonsEditViewModel implements ViewModel {
         return nameProperty;
     }
 
-    public String getName() {
-        return nameProperty.get();
-    }
-
-    public void setName(String message) {
-        nameProperty.set(message);
-    }
-
     public Person selectedPerson() {
         final Person selectedPerson = personRepository.findOne(scope.selectedPersonIdProperty().get());
 
@@ -178,6 +167,10 @@ public class PersonsEditViewModel implements ViewModel {
         }
 
         return selectedPerson;
+    }
+
+    private List<PersonTeam> getAllTeamsOfSelectedPerson() {
+        return personTeamRepository.findAllByPersonId(scope.selectedPersonIdProperty().get());
     }
 
     public DelegateCommand getSaveCommand() {
